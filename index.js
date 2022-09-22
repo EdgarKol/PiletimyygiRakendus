@@ -2,16 +2,14 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
-let expressWs = require('express-ws')(app)
-
-app.ws('/', function(ws, req) {
-    ws.on('message', function(msg) {
-        expressWs.getWss().clients.forEach(client => client.send(msg));
-    });
-})
-
 app.use(cors());        // Avoid CORS errors in browsers
 app.use(express.json()) // Populate req.body
+YAML = require('yamljs');
+const swaggerDocument = YAML.load('swagger.yaml')
+const swaggerUi = require('swagger-ui-express');
+
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 let events = [
     { id: 1, name: "Magnus' Among Us themed Birthday Party", location: "Aedevahe talu, Kursi küla, Harjumaa", date: "2022-08-08 19:00", price: "16.50"},
@@ -28,6 +26,8 @@ const sessions = []
 app.get('/events', (req, res) => {
     res.send(events)
 })
+
+
 
 app.get('/events/:id', (req, res) => {
     if (typeof events[req.params.id - 1] === 'undefined') {
@@ -61,7 +61,6 @@ app.post('/events', (req, res) => {
                     price: req.body.price
                 }
                 events.push(newEvent)
-                expressWs.getWss().clients.forEach(client => client.send(JSON.stringify(newEvent)))
                 res.status(201).location('localhost:8080/events/' + (events.length - 1)).send(newEvent)
             }
         }
@@ -115,8 +114,7 @@ app.patch('/events/:id', (req, res) => {
                 } else {
                     event.price = req.body.price
                 }
-                expressWs.getWss().clients.forEach(client => client.send(JSON.stringify(event)))
-
+                
                 res.status(200).send({success: true})
             }
 
@@ -192,7 +190,7 @@ app.delete('/events/:id', (req, res) => {
                 for(let i = 0; i < events.length; i++){
                     events[i].id = i +1
                 }
-                expressWs.getWss().clients.forEach(client => client.send(req.params.id));
+
                 return res.status(200).send({success: true})
             }
 
