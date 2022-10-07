@@ -1,135 +1,179 @@
 openapi: 3.0.2
 info:
-  title: Piletimyygirakendus
-  version: 1.0.0
+    title: Piletimyygirakendus
+    version: 1.0.0
 paths:
-  /events:
-    get:
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Events"
-              examples:
-                events:
-                  value: " {\r\n        \"date\": \"2022-08-08 19:00\",\r\n        \"id\": 1,\r\n        \"location\": \"Aedevahe talu, Kursi küla, Harjumaa\",\r\n        \"name\": \"Magnus' Among Us themed Birthday Party\",\r\n        \"price\": \"16.50\"\r\n    }"
-          description: Returns lists of events
-  "/events/{id}":
-    patch:
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/postSessions"
-              examples:
-                event updated:
-                  value:
-                    isAdmin: some text
-                    password: some text
-                    username: some text
-          description: Ok
-        "401":
-          description: Missing authorization header
-      description: Missing authorization header
-    parameters:
-      - examples:
-          event id:
-            value: "1"
-        name: id
-        description: |
-          event id
-        schema:
-          type: integer
-        in: path
-        required: true
-  /sessions:
-    post:
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/postSessions"
-            examples:
-              postSessions:
-                value:
-                  isAdmin: some text
-                  password: some text
-                  username: some text
-        required: true
-      responses:
-        "201":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/postSessionsResponse"
-              examples:
-                sessionID:
-                  value:
-                    isAdmin: true
-                    sessionId: 77169636
-                    success: true
-          description: created
-        "401":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/error"
-              examples:
-                Invalid username or password:
-                  value:
-                    error: Invalid username or password
-          description: error
+    /events:
+        get:
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Events'
+                            examples:
+                                events:
+                                    value: " {\r\n        \"date\": \"2022-08-08 19:00\",\r\n        \"id\": 1,\r\n        \"location\": \"Aedevahe talu, Kursi küla, Harjumaa\",\r\n        \"name\": \"Magnus' Among Us themed Birthday Party\",\r\n        \"price\": \"16.50\"\r\n    }"
+                    description: Returns lists of events
+        post:
+            responses:
+                '201':
+                    headers:
+                        'sessionId: Integer':
+                            schema:
+                                type: integer
+                            examples:
+                                sessionID:
+                                    value: '72'
+                    description: Event created
+    '/events/{id}':
+        get:
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Events'
+                            examples:
+                                event by id:
+                                    value: "\r\n{\r\n    \"date\": \"2022-08-08 19:00\",\r\n    \"id\": 1,\r\n    \"location\": \"Aedevahe talu, Kursi küla, Harjumaa\",\r\n    \"name\": \"Magnus' Among Us themed Birthday Party\",\r\n    \"price\": \"16.50\"\r\n}"
+                    description: get event by id
+                '404':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/error'
+                            examples:
+                                Event not found:
+                                    value:
+                                        error: Event not found
+                    description: '"error": "Event not found"'
+        delete:
+            responses:
+                '200':
+                    description: Event deleted
+                '401':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/error'
+                            examples:
+                                'authorization ':
+                                    value:
+                                        error: authorization
+                    description: 'authorization '
+            description: Delete event
+        patch:
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/postSessions'
+                            examples:
+                                event updated:
+                                    value:
+                                        isAdmin: some text
+                                        password: some text
+                                        username: some text
+                    description: Ok
+                '401':
+                    description: Missing authorization header
+            description: Missing authorization header
+        parameters:
+            -
+                examples:
+                    event id:
+                        value: '1'
+                name: id
+                description: |
+                    event id
+                schema:
+                    type: integer
+                in: path
+                required: true
+    /sessions:
+        post:
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/postSessions'
+                        examples:
+                            postSessions:
+                                value:
+                                    isAdmin: some text
+                                    password: some text
+                                    username: some text
+                required: true
+            responses:
+                '201':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/postSessionsResponse'
+                            examples:
+                                sessionID:
+                                    value:
+                                        isAdmin: true
+                                        sessionId: 77169636
+                                        success: true
+                    description: created
+                '401':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/error'
+                            examples:
+                                Invalid username or password:
+                                    value:
+                                        error: Invalid username or password
+                    description: error
 components:
-  schemas:
-    Events:
-      $ref: "#/components/schemas/Events"
-      title: Root Type for Events
-      description: list ov events
-      example:
-        - date: "2022-08-08 19:00"
-          id: 1
-          location: "Aedevahe talu, Kursi küla, Harjumaa"
-          name: Magnus' Among Us themed Birthday Party
-          price: "16.50"
-    postSessions:
-      title: Root Type for postSessions
-      description: ""
-      type: object
-      properties:
-        isAdmin:
-          type: string
-        password:
-          type: string
-        username:
-          type: string
-      example:
-        isAdmin: "true"
-        password: admin
-        username: admin
-    error:
-      title: Root Type for error
-      description: ""
-      type: object
-      properties:
+    schemas:
+        postSessions:
+            title: Root Type for postSessions
+            description: ''
+            type: object
+            properties:
+                isAdmin:
+                    type: string
+                password:
+                    type: string
+                username:
+                    type: string
+            example:
+                isAdmin: 'true'
+                password: admin
+                username: admin
         error:
-          type: string
-      example:
-        error: Invalid username or password
-    postSessionsResponse:
-      title: Root Type for postSessionsResponse
-      description: ""
-      type: object
-      properties:
-        isAdmin:
-          type: boolean
-        sessionId:
-          format: int32
-          type: integer
-        success:
-          type: boolean
-      example:
-        isAdmin: true
-        sessionId: 77169636
-        success: true
+            title: Root Type for error
+            description: '"Event not found"'
+            type: object
+            properties:
+                error:
+                    type: string
+            example:
+                error: Event not found
+        postSessionsResponse:
+            title: Root Type for postSessionsResponse
+            description: ''
+            type: object
+            properties:
+                isAdmin:
+                    type: boolean
+                sessionId:
+                    format: int32
+                    type: integer
+                success:
+                    type: boolean
+            example:
+                isAdmin: true
+                sessionId: 77169636
+                success: true
+        Events:
+            description: list ov events
+            type: object
+            properties:
+                Event:
+                    description: event type

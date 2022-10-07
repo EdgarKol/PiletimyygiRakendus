@@ -58,7 +58,7 @@ app.post("/events", (req, res) => {
   let auth = req.headers.authorization;
 
   if (!auth) {
-    return res.status(400).send({ error: "Missing authorization header" });
+    return res.status(401).send({ error: "Missing authorization header" });
   } else {
     try {
       let obj = sessions.find((o) => o.id == auth);
